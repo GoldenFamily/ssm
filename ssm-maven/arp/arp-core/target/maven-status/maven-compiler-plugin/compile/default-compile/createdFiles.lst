@@ -1,0 +1,4 @@
+com\beyondsoft\entity\Student.class
+com\beyondsoft\service\StuService.class
+com\beyondsoft\mapper\StuMapper.class
+com\beyondsoft\service\impl\StuServiceImpl.class

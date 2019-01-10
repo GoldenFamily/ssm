@@ -1,0 +1,60 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	    http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<!-- 读取properties文件 db.properties -->
+	<context:property-placeholder location="classpath:db.properties" />
+
+	<!-- 配置 数据源 druid-->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		<!-- 驱动 -->
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<!-- url -->
+		<property name="url" value="${jdbc.url}" />
+		<!-- 用户名 -->
+		<property name="username" value="${jdbc.username}" />
+		<!-- 密码 -->
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<!-- 配置 Mybatis的工厂 -->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 数据源 -->
+        <property name="dataSource" ref="dataSource" />
+        <!-- 扫描mapper.xml文件。当xml文件与Mapper.java文件不在同一个包时，需要在此单独配置扫描xml文件 -->
+        <property name="mapperLocations" value="classpath:mapper/**/*.xml"></property>
+        <!-- 配置Mybatis的核心 配置文件所在位置 -->
+        <property name="configLocation" value="classpath:mybatis.xml" />
+        <!-- 配置pojo别名 -->
+        <property name="typeAliasesPackage" value="com.beyondsoft.entity"></property>
+    </bean>
+
+	<!-- 配置 DAO/Mapper层包扫描  -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.beyondsoft.mapper" />
+	</bean>
+	
+	<!-- 配置  Service层包扫描 -->
+	<context:component-scan base-package="com.beyondsoft.service"/>
+
+	<!-- 事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 数据源 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 开启注解事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>
